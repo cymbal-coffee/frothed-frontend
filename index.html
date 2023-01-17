@@ -74,6 +74,39 @@ limitations under the License.
     var auth = firebase.auth();
     var storageRef = firebase.storage().ref();
 
+    // Get the running project ID
+    const projectId = firebase.app().options.projectId;
+    const bonusPoints = 1000;
+
+    const payload = {
+      project_id: projectId,
+      points: bonusPoints
+    }
+
+    // Bond Service URL
+    const registerLink = "https://bond-service-l5xebjflvq-ew.a.run.app/v1/java_script/register"
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+      console.log("Sending ping to Bond Service to register project: " + projectId);
+      // Send a ping to the Bond Service saying we're here
+      const params = new URLSearchParams(payload);
+      var req = new XMLHttpRequest();
+      req.addEventListener("load", function (event) {
+        if (event.currentTarget.status == 200) {
+          console.log("Registered OK: " + event.currentTarget.responseText);
+        }
+        else {
+          console.log("Error registering: " + event.currentTarget.responseText);
+        }
+      });
+      req.addEventListener("error", function (event) {
+        console.log("Error registering: " + event.currentTarget.responseText);
+      });
+      req.open("POST", registerLink);
+      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      req.send(params);
+    });
+
     function handleFileSelect(evt) {
       evt.stopPropagation();
       evt.preventDefault();
